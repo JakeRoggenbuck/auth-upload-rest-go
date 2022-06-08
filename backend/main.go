@@ -9,8 +9,14 @@ import (
 )
 
 func getLogIn() gin.Accounts {
+	password := os.Getenv("ADMIN_PASSWORD")
+	if password == "" {
+		fmt.Println("ADMIN_PASSWORD not set")
+		log.Fatal("ADMIN_PASSWORD not set")
+	}
+
 	return gin.Accounts{
-		"Admin": os.Getenv("ADMIN_PASSWORD"),
+		"Admin": password,
 	}
 }
 
@@ -52,6 +58,10 @@ func main() {
 	authedSubRoute.GET("/", homePage)
 	authedSubRoute.POST("/upload", uploadFile)
 
-	listenPort := "1357"
+	listenPort := os.Getenv("PORT")
+	if listenPort == "" {
+		listenPort = "1357"
+	}
+
 	router.Run(":" + listenPort)
 }

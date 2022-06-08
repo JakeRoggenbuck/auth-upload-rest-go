@@ -26,14 +26,12 @@ func uploadFile(c *gin.Context) {
 func main() {
 	router := gin.Default()
 
-	router.POST("/upload", uploadFile)
+	authedSubRoute := router.Group("/api/v1/", gin.BasicAuth(gin.Accounts{
+		"admin": "adminpass",
+	}))
 
-	// authedSubRoute := router.Group("/api/v1/", gin.BasicAuth(gin.Accounts{
-	// 	"admin": "adminpass",
-	// }))
-
-	// authedSubRoute.GET("/", homePage)
-	// authedSubRoute.GET("/upload", uploadFile)
+	authedSubRoute.GET("/", homePage)
+	authedSubRoute.POST("/upload", uploadFile)
 	
 	listenPort := "1357"
 	router.Run(":" + listenPort)

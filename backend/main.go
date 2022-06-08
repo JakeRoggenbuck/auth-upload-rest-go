@@ -3,12 +3,29 @@ package main
 import (
 	"fmt"
 	"github.com/gin-gonic/gin"
-	"net/http"
 	"log"
+	"net/http"
+	"os"
 )
+
+func getLogIn() gin.Accounts {
+	return gin.Accounts{
+		"Admin": os.Getenv("ADMIN_PASSWORD"),
+	}
+}
+
+func setupLogging() {
+	file, err := os.OpenFile("logs.txt", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	log.SetOutput(file)
+}
 
 func homePage(c *gin.Context) {
 	c.String(http.StatusOK, "Home\n")
+	fmt.Println("")
 }
 
 func uploadFile(c *gin.Context) {
@@ -19,20 +36,22 @@ func uploadFile(c *gin.Context) {
 
 	log.Println(file.Filename)
 
-	c.SaveUploadedFile(file, "out/uploaded-" + file.Filename)
+	c.SaveUploadedFile(file, "out/uploaded-"+file.Filename)
 	c.String(http.StatusOK, fmt.Sprintf("'%s' uploaded!", file.Filename))
 }
 
 func main() {
+	setupLogging()
 	router := gin.Default()
 
-	authedSubRoute := router.Group("/api/v1/", gin.BasicAuth(gin.Accounts{
-		"admin": "adminpass",
-	}))
+	routeStart := "/api/v1/"
+	authAccount := getLogIn()
+
+	authedSubRoute := router.Group(routeStart, gin.BasicAuth(authAccount))
 
 	authedSubRoute.GET("/", homePage)
 	authedSubRoute.POST("/upload", uploadFile)
-	
+
 	listenPort := "1357"
 	router.Run(":" + listenPort)
 }

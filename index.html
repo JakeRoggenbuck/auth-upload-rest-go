@@ -4,16 +4,32 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
-    <title>Document</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css"
+    />
+    <title>Document Uploader</title>
+    <style>
+      .all {
+        margin: 20px;
+      }
+	  input {
+	  	margin: 10px;
+	  }
+    </style>
   </head>
   <body>
-    <form
-      enctype="multipart/form-data"
-      action="http://localhost:1357/api/v1/upload"
-      method="post"
-    >
-      <input type="file" name="myFile" />
-      <input type="submit" value="upload" />
-    </form>
+    <div class="all">
+      <h2>Document Uploader</h2>
+      <hr />
+      <form
+        enctype="multipart/form-data"
+        action="http://localhost:1357/api/v1/upload"
+        method="post"
+      >
+        <input class="btn" type="file" name="myFile" />
+        <input class="btn" type="submit" value="upload" />
+      </form>
+    </div>
   </body>
 </html>

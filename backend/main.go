@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"github.com/gookit/color"
 	"log"
 	"net/http"
 	"os"
@@ -11,7 +12,7 @@ import (
 func getLogIn() gin.Accounts {
 	password := os.Getenv("ADMIN_PASSWORD")
 	if password == "" {
-		fmt.Println("ADMIN_PASSWORD not set")
+		color.Error.Println("ADMIN_PASSWORD not set")
 		log.Fatal("ADMIN_PASSWORD not set")
 	}
 
@@ -31,7 +32,6 @@ func setupLogging() {
 
 func homePage(c *gin.Context) {
 	c.String(http.StatusOK, "Home\n")
-	fmt.Println("")
 }
 
 func uploadFile(c *gin.Context) {
@@ -62,6 +62,9 @@ func main() {
 	if listenPort == "" {
 		listenPort = "1357"
 	}
+
+	fmt.Print("\nHosted at ")
+	color.Magenta.Println("http://localhost:" + listenPort + routeStart + "\n")
 
 	router.Run(":" + listenPort)
 }

@@ -38,12 +38,38 @@ func uploadFile(c *gin.Context) {
 	file, err := c.FormFile("myFile")
 	if err != nil {
 		fmt.Println(err)
+
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": err,
+		})
 	}
 
 	log.Println(file.Filename)
 
 	c.SaveUploadedFile(file, "out/uploaded-"+file.Filename)
-	c.String(http.StatusOK, fmt.Sprintf("'%s' uploaded!", file.Filename))
+	c.JSON(http.StatusOK, gin.H{
+		"message": fmt.Sprintf("'%s' uploaded!", file.Filename),
+	})
+}
+
+func listFiles(c *gin.Context) {
+	var files []string
+
+	f, err := os.Open("out/")
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": "Path 'out/' not created.",
+		})
+	}
+
+	fileInfo, err := f.Readdir(-1)
+	f.Close()
+
+	for _, file := range fileInfo {
+		files = append(files, file.Name())
+	}
+
+	c.JSON(http.StatusOK, files)
 }
 
 func main() {
@@ -57,6 +83,7 @@ func main() {
 
 	authedSubRoute.GET("/", homePage)
 	authedSubRoute.POST("/upload", uploadFile)
+	authedSubRoute.GET("/list", listFiles)
 
 	listenPort := os.Getenv("PORT")
 	if listenPort == "" {

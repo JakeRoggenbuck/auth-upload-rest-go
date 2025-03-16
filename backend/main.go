@@ -38,12 +38,18 @@ func uploadFile(c *gin.Context) {
 	file, err := c.FormFile("myFile")
 	if err != nil {
 		fmt.Println(err)
+
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": err,
+		})
 	}
 
 	log.Println(file.Filename)
 
 	c.SaveUploadedFile(file, "out/uploaded-"+file.Filename)
-	c.String(http.StatusOK, fmt.Sprintf("'%s' uploaded!", file.Filename))
+	c.JSON(http.StatusOK, gin.H{
+		"message": fmt.Sprintf("'%s' uploaded!", file.Filename),
+	})
 }
 
 func listFiles(c *gin.Context) {
@@ -51,7 +57,9 @@ func listFiles(c *gin.Context) {
 
 	f, err := os.Open("out/")
 	if err != nil {
-
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": "Path 'out/' not created.",
+		})
 	}
 
 	fileInfo, err := f.Readdir(-1)
@@ -61,7 +69,7 @@ func listFiles(c *gin.Context) {
 		files = append(files, file.Name())
 	}
 
-	c.String(http.StatusOK, fmt.Sprintf("%q", files))
+	c.JSON(http.StatusOK, files)
 }
 
 func main() {

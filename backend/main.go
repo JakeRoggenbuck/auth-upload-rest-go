@@ -46,6 +46,24 @@ func uploadFile(c *gin.Context) {
 	c.String(http.StatusOK, fmt.Sprintf("'%s' uploaded!", file.Filename))
 }
 
+func listFiles(c *gin.Context) {
+	var files []string
+
+	f, err := os.Open("out/")
+	if err != nil {
+
+	}
+
+	fileInfo, err := f.Readdir(-1)
+	f.Close()
+
+	for _, file := range fileInfo {
+		files = append(files, file.Name())
+	}
+
+	c.String(http.StatusOK, fmt.Sprintf("%q", files))
+}
+
 func main() {
 	setupLogging()
 	router := gin.Default()
@@ -57,6 +75,7 @@ func main() {
 
 	authedSubRoute.GET("/", homePage)
 	authedSubRoute.POST("/upload", uploadFile)
+	authedSubRoute.GET("/list", listFiles)
 
 	listenPort := os.Getenv("PORT")
 	if listenPort == "" {
